@@ -4,21 +4,35 @@ import moment from "moment";
 
 const Table1 = () => {
 const [sortedObj, setSortedObj] = useState(object);
-const sortById=()=>{
-    const sorted=[...sortedObj].sort((a,b)=>a.id-b.id)
-    setSortedObj(sorted)
-}
 
-const sortByName=()=>{
-    const sorted=[...sortedObj].sort((a,b)=>a.name.localeCompare(b.name))
-    setSortedObj(sorted)
-}
-const sortByDate = () => {
-  const sorted = [...sortedObj].sort((a, b) =>
-  moment(a.date,"DD/MM/YYYY hh:mm A").diff(moment(b.date, "DD/MM/YYYY hh:mm A"))
-);
+const createSortFunction = (sortedObj,sort,sortBy) => {
+  return () => {
+    let sorted;
+    switch (sortBy) {
+      case 'name':
+        sorted = [...sortedObj].sort((a, b) => a[sortBy].localeCompare(b[sortBy]));
+        break;
+        case 'id':
+          sorted = [...sortedObj].sort((a, b) => a[sortBy] - b[sortBy]);
+          break;
+        case 'date':
+          sorted = [...sortedObj].sort((a, b) =>
+          moment(a[sortBy], "DD/MM/YYYY hh:mm A").diff(moment(b[sortBy], "DD/MM/YYYY hh:mm A"),'asc'));
+          break;
+      default:
+           console.log("wrong sort")
+        break;
+    }
+    if(sort==='desc'){
+      sorted.reverse();
+       return setSortedObj(sorted);
+    }
     setSortedObj(sorted);
+  };
 };
+const sortById = createSortFunction(sortedObj,"desc",'id');
+const sortByName = createSortFunction(sortedObj,'asc','name');
+const sortByDate = createSortFunction(sortedObj,'asc','date');
 
   return (
     <>
